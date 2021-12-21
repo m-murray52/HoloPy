@@ -1,8 +1,8 @@
 import matplotlib
 import numpy as np 
-import sympy as sp 
-from sympy import symbols
-from sympy.plotting import plot
+import matplotlib.pyplot as plt
+from matplotlib.widgets import Slider, Button
+
 import argparse
 
 
@@ -41,20 +41,61 @@ diffractive_lens1 = DiffractiveLens(14000, 50000, 1.5, args.input_angle, 0.532)
 print(diffractive_lens1.bragg_angle())
 print(diffractive_lens1.min_fringe_spacing())
 
-# Plot fring spacing vs r
 
-r = symbols('r')
 
 
 # Function to plot fringe spacing
 
-def plot_fringes(wavelength, refractive_index, radius, focus, input_angle, r):
-    return plot(sp.Abs(wavelength/(2*refractive_index*sp.sin((sp.atan(r/focus)- input_angle)/2))), (r, -radius, radius), xscale='linear', yscale='linear', show=True)
+def fringes(wavelength, refractive_index, radius, focus, input_angle):
+    return np.abs(wavelength/(2*refractive_index*np.sin((np.arctan(radius/focus)- input_angle)/2)))
 
-fringe_plot = plot_fringes(diffractive_lens1.wavelength, diffractive_lens1.refractive_index, diffractive_lens1.radius(), diffractive_lens1.focal_length, diffractive_lens1.input_angle, r)
-fringe_plot
+r = np.linspace(-7000, 7000, 700)
 
 
+
+# Create the figure and the line that we will manipulate
+fig, ax = plt.subplots()
+line, = plt.plot(r, fringes(diffractive_lens1.wavelength, diffractive_lens1.refractive_index, r, diffractive_lens1.focal_length, diffractive_lens1.input_angle), lw=2)
+ax.set_xlabel('r (um)')
+#plt.ylim(-10, 50)
+
+# adjust the main plot to make room for the sliders
+plt.subplots_adjust(left=0.25, bottom=0.25)
+
+# Make a horizontal slider to control the frequency.
+axangle = plt.axes([0.25, 0.1, 0.65, 0.03])
+angle_slider = Slider(
+    ax=axangle,
+    label='Angle',
+    valmin=0,
+    valmax=np.pi,
+    valinit=diffractive_lens1.input_angle,
+)
+
+
+
+# The function to be called anytime a slider's value changes
+def update(val):
+    line.set_ydata(fringes(diffractive_lens1.wavelength, diffractive_lens1.refractive_index, r, diffractive_lens1.focal_length,input_angle=angle_slider.val))
+    fig.canvas.draw_idle()
+
+
+# register the update function with each slider
+angle_slider.on_changed(update)
+#amp_slider.on_changed(update)
+
+# Create a `matplotlib.widgets.Button` to reset the sliders to initial values.
+resetax = plt.axes([0.8, 0.025, 0.1, 0.04])
+button = Button(resetax, 'Reset', hovercolor='0.975')
+
+
+def reset(event):
+    angle_slider.reset()
+    #amp_slider.reset()
+button.on_clicked(reset)
+
+
+plt.show()
 
 # Function to plot spatial frequencies
 def plot_spatial_frequency(wavelength, refractive_index, radius, focus, input_angle, r):
@@ -62,13 +103,14 @@ def plot_spatial_frequency(wavelength, refractive_index, radius, focus, input_an
 
 
 
-spatial_frequency_plot = plot_spatial_frequency(diffractive_lens1.wavelength, diffractive_lens1.refractive_index, diffractive_lens1.radius(), diffractive_lens1.focal_length, diffractive_lens1.input_angle, r)
-spatial_frequency_plot
+#spatial_frequency_plot = plot_spatial_frequency(diffractive_lens1.wavelength, diffractive_lens1.refractive_index, diffractive_lens1.radius(), diffractive_lens1.focal_length, diffractive_lens1.input_angle, r)
+#spatial_frequency_plot
 
 # Function to calculate 
 def slant_angle(radius, focus, input_angle):
     output_angle = sp.atan(radius/focus)
     return (output_angle - input_angle)/2
 
-slant_angle_plot = plot(slant_angle(r, diffractive_lens1.focal_length, diffractive_lens1.input_angle), (r, -diffractive_lens1.radius(), diffractive_lens1.radius()))
-slant_angle_plot
+#slant_angle_plot = plot(slant_angle(r, diffractive_lens1.focal_length, diffractive_lens1.input_angle), (r, -diffractive_lens1.radius(), diffractive_lens1.radius()))
+#slant_angle_plot
+
