@@ -57,40 +57,60 @@ r = np.linspace(-7000, 7000, 700)
 fig, ax = plt.subplots()
 line, = plt.plot(r, fringes(diffractive_lens1.wavelength, diffractive_lens1.refractive_index, r, diffractive_lens1.focal_length, diffractive_lens1.input_angle), lw=2)
 ax.set_xlabel('r (um)')
-#plt.ylim(-10, 50)
+ax.set_ylabel('Fringe Spacing (um)')
+plt.ylim(0, 100)
 
 # adjust the main plot to make room for the sliders
-plt.subplots_adjust(left=0.25, bottom=0.25)
+plt.subplots_adjust(left=0.25, bottom=0.5)
 
 # Make a horizontal slider to control the frequency.
-axangle = plt.axes([0.25, 0.1, 0.65, 0.03])
+axangle = plt.axes([0.25, 0.05, 0.65, 0.03])
 angle_slider = Slider(
     ax=axangle,
     label='Angle',
-    valmin=0,
-    valmax=np.pi,
+    valmin=-(np.pi)/2,
+    valmax=(np.pi)/2,
     valinit=diffractive_lens1.input_angle,
 )
 
 # Make a horizontal slider to control the frequency.
-axangle = plt.axes([0.25, 0.05, 0.65, 0.03])
+axfocus = plt.axes([0.25, 0.1, 0.65, 0.03])
 focus_slider = Slider(
-    ax=axangle,
+    ax=axfocus,
     label='Focal Length',
     valmin=0,
     valmax=250000,
     valinit=diffractive_lens1.focal_length,
 )
 
+axwavelength = plt.axes([0.25, 0.15, 0.65, 0.03])
+wavelength_slider = Slider(
+    ax=axwavelength,
+    label='Wavelength',
+    valmin=0.380,
+    valmax=0.750,
+    valinit=diffractive_lens1.wavelength,
+)
+
+axrefractive_index = plt.axes([0.25, 0.20, 0.65, 0.03])
+refractive_index_slider = Slider(
+    ax=axrefractive_index,
+    label='n',
+    valmin=1,
+    valmax=5,
+    valinit=diffractive_lens1.refractive_index,
+)
 # The function to be called anytime a slider's value changes
 def update(val):
-    line.set_ydata(fringes(diffractive_lens1.wavelength, diffractive_lens1.refractive_index, r, focus_slider.val, input_angle=angle_slider.val))
+    line.set_ydata(fringes(wavelength_slider.val, refractive_index_slider.val, r, focus_slider.val, input_angle=angle_slider.val))
     fig.canvas.draw_idle()
 
 
 # register the update function with each slider
 angle_slider.on_changed(update)
 focus_slider.on_changed(update)
+wavelength_slider.on_changed(update)
+refractive_index_slider.on_changed(update)
 
 # Create a `matplotlib.widgets.Button` to reset the sliders to initial values.
 resetax = plt.axes([0.8, 0.025, 0.1, 0.04])
@@ -100,6 +120,8 @@ button = Button(resetax, 'Reset', hovercolor='0.975')
 def reset(event):
     angle_slider.reset()
     focus_slider.reset()
+    wavelength_slider.reset()
+    refractive_index_slider.reset()
 button.on_clicked(reset)
 
 
