@@ -1,3 +1,16 @@
+'''
+A simple script used to interactively visualise plots used to model diffractive optical elements. So far only a simple diffractive lens of diameter 14 mm has been modeled here. 
+User can alter the code to correspond to other lens sizes. The lenses are assumed to be thin lenses. 
+User can use sliders to vary other optical lens parameters.
+
+
+Usage:
+  diffractive.py [--input_angle=<input_angle>] 
+
+  Click on the image to set seed point
+
+'''
+
 import matplotlib
 import numpy as np 
 import matplotlib.pyplot as plt
@@ -7,7 +20,7 @@ import argparse
 
 
 parser = argparse.ArgumentParser(description='Tool for modelling holographic diffractive optical elements (DOEs)')
-parser.add_argument('--input_angle', type=float, required= True, help='Input angle of beam')
+parser.add_argument('--input_angle', type=float, required= False, help='Input angle of beam')
 
 args = parser.parse_args()
 
@@ -37,7 +50,7 @@ class DiffractiveLens:
         return self.diameter/2
 
 
-diffractive_lens1 = DiffractiveLens(14000, 50000, 1.5, args.input_angle, 0.532)
+diffractive_lens1 = DiffractiveLens(14000, 50000, 1.5, 0, 0.532)
 print(diffractive_lens1.bragg_angle())
 print(diffractive_lens1.min_fringe_spacing())
 
@@ -50,7 +63,7 @@ def fringes(wavelength, refractive_index, radius, focus, input_angle):
     return np.abs(wavelength/(2*refractive_index*np.sin((np.arctan(radius/focus)- input_angle)/2)))
 
 def slant_angle(radius, focus, input_angle):
-    output_angle = np.atan(radius/focus)
+    output_angle = np.arctan(radius/focus)
     return (output_angle - input_angle)/2
 
 r = np.linspace(-7000, 7000, 700)
@@ -58,23 +71,24 @@ r = np.linspace(-7000, 7000, 700)
 
 
 # Create the figure and the line that we will manipulate
-fig, ax = plt.subplots(nrows = 3, ncols= 1, sharex= True, sharey=False, gridspec_kw={'height_ratios':[1,1,1]})
-plt.subplot(211)
+fig, ax = plt.subplots(nrows = 3, ncols= 1, sharex= True, sharey=False, gridspec_kw={'height_ratios':[0.5,0.5, 0.5]})
+plt.subplot(311)
 line1, = plt.plot(r, fringes(diffractive_lens1.wavelength, diffractive_lens1.refractive_index, r, diffractive_lens1.focal_length, diffractive_lens1.input_angle), lw=2)
 ax[0].set_xlabel('r (um)')
 ax[0].set_ylabel('d (um)')
 
-plt.subplot(212)
+plt.subplot(312)
 line2, = plt.plot(r, 1/(fringes(diffractive_lens1.wavelength, diffractive_lens1.refractive_index, r, diffractive_lens1.focal_length, diffractive_lens1.input_angle)), lw=2)
 ax[1].set_xlabel('r (um)')
 ax[1].set_ylabel('1/d (1/um)')
 #plt.ylim(0, 100)
 
 
-"""plt.subplot(213)
+plt.subplot(313)
 line3, = plt.plot(r, (slant_angle(r, diffractive_lens1.focal_length, diffractive_lens1.input_angle))*(180/np.pi), lw=2)
 ax[2].set_xlabel('r (um)')
-ax[2].set_ylabel('Slant (degrees)')"""
+ax[2].set_ylabel('Slant (degrees)')
+
 # adjust the main plot to make room for the sliders
 plt.subplots_adjust(left=0.25, bottom=0.25)
 
@@ -119,7 +133,7 @@ refractive_index_slider = Slider(
 def update(val):
     line1.set_ydata(fringes(wavelength_slider.val, refractive_index_slider.val, r, focus_slider.val, input_angle=angle_slider.val))
     line2.set_ydata(1/(fringes(wavelength_slider.val, refractive_index_slider.val, r, focus_slider.val, input_angle=angle_slider.val)))
-    #line3.set_ydata(slant_angle(r, focus_slider.val, angle_slider.val))
+    line3.set_ydata(slant_angle(r, focus_slider.val, angle_slider.val))
     fig.canvas.draw_idle()
 
 
