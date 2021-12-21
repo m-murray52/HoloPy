@@ -72,17 +72,25 @@ angle_slider = Slider(
     valinit=diffractive_lens1.input_angle,
 )
 
-
+# Make a horizontal slider to control the frequency.
+axangle = plt.axes([0.25, 0.05, 0.65, 0.03])
+focus_slider = Slider(
+    ax=axangle,
+    label='Focal Length',
+    valmin=0,
+    valmax=250000,
+    valinit=diffractive_lens1.focal_length,
+)
 
 # The function to be called anytime a slider's value changes
 def update(val):
-    line.set_ydata(fringes(diffractive_lens1.wavelength, diffractive_lens1.refractive_index, r, diffractive_lens1.focal_length,input_angle=angle_slider.val))
+    line.set_ydata(fringes(diffractive_lens1.wavelength, diffractive_lens1.refractive_index, r, focus_slider.val, input_angle=angle_slider.val))
     fig.canvas.draw_idle()
 
 
 # register the update function with each slider
 angle_slider.on_changed(update)
-#amp_slider.on_changed(update)
+focus_slider.on_changed(update)
 
 # Create a `matplotlib.widgets.Button` to reset the sliders to initial values.
 resetax = plt.axes([0.8, 0.025, 0.1, 0.04])
@@ -91,7 +99,7 @@ button = Button(resetax, 'Reset', hovercolor='0.975')
 
 def reset(event):
     angle_slider.reset()
-    #amp_slider.reset()
+    focus_slider.reset()
 button.on_clicked(reset)
 
 
