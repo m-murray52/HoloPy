@@ -59,7 +59,7 @@ print(diffractive_lens1.min_fringe_spacing())
 
 # Function to plot fringe spacing
 
-def fringes(wavelength, refractive_index, radius, focus, input_angle):
+def fringe_spacing(wavelength, refractive_index, radius, focus, input_angle):
     return np.abs(wavelength/(2*refractive_index*np.sin((np.arctan(radius/focus)- input_angle)/2)))
 
 def slant_angle(radius, focus, input_angle):
@@ -73,12 +73,12 @@ r = np.linspace(-7000, 7000, 700)
 # Create the figure and the line that we will manipulate
 fig, ax = plt.subplots(nrows = 3, ncols= 1, sharex= True, sharey=False, gridspec_kw={'height_ratios':[0.5,0.5, 0.5]})
 plt.subplot(311)
-line1, = plt.plot(r, fringes(diffractive_lens1.wavelength, diffractive_lens1.refractive_index, r, diffractive_lens1.focal_length, diffractive_lens1.input_angle), lw=2)
+line1, = plt.plot(r, fringe_spacing(diffractive_lens1.wavelength, diffractive_lens1.refractive_index, r, diffractive_lens1.focal_length, diffractive_lens1.input_angle), lw=2)
 ax[0].set_xlabel('r (um)')
 ax[0].set_ylabel('d (um)')
 
 plt.subplot(312)
-line2, = plt.plot(r, 1/(fringes(diffractive_lens1.wavelength, diffractive_lens1.refractive_index, r, diffractive_lens1.focal_length, diffractive_lens1.input_angle)), lw=2)
+line2, = plt.plot(r, 1/(fringe_spacing(diffractive_lens1.wavelength, diffractive_lens1.refractive_index, r, diffractive_lens1.focal_length, diffractive_lens1.input_angle)), lw=2)
 ax[1].set_xlabel('r (um)')
 ax[1].set_ylabel('1/d (1/um)')
 #plt.ylim(0, 100)
@@ -90,7 +90,7 @@ ax[2].set_xlabel('r (um)')
 ax[2].set_ylabel('Slant (degrees)')
 
 # adjust the main plot to make room for the sliders
-plt.subplots_adjust(left=0.25, bottom=0.25)
+plt.subplots_adjust(left=0.25, bottom=0.33)
 
 # Make a horizontal slider to control the frequency.
 axangle = plt.axes([0.25, 0.05, 0.65, 0.03])
@@ -131,9 +131,9 @@ refractive_index_slider = Slider(
 )
 # The function to be called anytime a slider's value changes
 def update(val):
-    line1.set_ydata(fringes(wavelength_slider.val, refractive_index_slider.val, r, focus_slider.val, input_angle=angle_slider.val))
-    line2.set_ydata(1/(fringes(wavelength_slider.val, refractive_index_slider.val, r, focus_slider.val, input_angle=angle_slider.val)))
-    line3.set_ydata(slant_angle(r, focus_slider.val, angle_slider.val))
+    line1.set_ydata(fringe_spacing(wavelength_slider.val, refractive_index_slider.val, r, focus_slider.val, input_angle=angle_slider.val))
+    line2.set_ydata(1/(fringe_spacing(wavelength_slider.val, refractive_index_slider.val, r, focus_slider.val, input_angle=angle_slider.val)))
+    line3.set_ydata(slant_angle(r, focus_slider.val, angle_slider.val)*(180/np.pi))
     fig.canvas.draw_idle()
 
 
