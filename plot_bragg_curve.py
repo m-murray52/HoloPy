@@ -24,8 +24,8 @@ record_wavelength = 532
 probe_wavelength = 633
 
 # Define recording beam angles
-beam1_angle = 30
-beam2_angle = -30
+beam1_angle = 22.8
+beam2_angle = -22.8
 
 # Define refractive index of film
 n_film = 1.5
@@ -46,7 +46,7 @@ bragg_probe = np.arcsin((probe_wavelength)/(2*n_film*period))
 print(np.rad2deg(bragg_probe))
 
 # Define film thickness (um)
-thickness = 70
+thickness = 5
 
 # range of bragg deviations in medium (rads)
 bragg_deviation = np.linspace(-beam1_angle_medium/2, beam1_angle_medium/2, 10000)
@@ -56,7 +56,8 @@ bragg_deviation_in_air = np.linspace(-beam1_angle/2, beam1_angle/2, 10000)
 
 def off_bragg():
     return (bragg_deviation*2*np.pi*n_film*thickness*np.sin(bragg_probe))/(probe_wavelength*0.001)
-    
+
+# in degrees 
 off_braggs = off_bragg()
 
 def diffraction_efficiency(E):
@@ -67,13 +68,13 @@ def diffraction_efficiency(E):
     return de
         
 E = off_braggs
-DE = [diffraction_efficiency(E= E) for E in E]
+DE = [diffraction_efficiency(E= E)*100 for E in E]
 
 def delta_n():
     return (probe_wavelength*0.001*np.cos((bragg_probe)))/(2*thickness)
 
 plt.plot(bragg_deviation_in_air, DE)
-plt.title(r'Thickness = 10 $\mu$m , n = 1.5, $\Delta n = 0.0291$ ')
+plt.title(r'Thickness = 5 $\mu$m , n = 1.5, $\Delta n = 0.0602$ ')
 plt.ylabel(r'DE  (%)')
 plt.xlabel(r'$\Delta \theta_{air}$ ($\circ$)')
 plt.show()

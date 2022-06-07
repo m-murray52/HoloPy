@@ -65,16 +65,18 @@ off_braggs = off_bragg()
     return (probe_wavelength*0.001*np.cos((bragg_probe)))/(2*thickness)"""
 delta_n = 0.002
 v = (np.pi*delta_n*thickness)/(probe_wavelength*0.001*np.cos(bragg_probe))
+v = 1.57
 
-def diffraction_efficiency(E):
-
+def diffraction_efficiency(bragg_deviation):
+    E = (bragg_deviation*2*np.pi*n_film*thickness*np.sin(bragg_probe))/(probe_wavelength*0.001)
     #de= (np.sin(np.sqrt((np.pi/2)**2 + off_braggs**2))**2)/(1+(off_braggs**2/(np.pi/2)**2))
     #return np.sin(v**2 + E**2)
     de= np.sin(np.sqrt((v)**2 + E**2))**2/(1+(E**2/(v)**2))
     return de
         
 E = off_braggs
-DE = [diffraction_efficiency(E= E) for E in E]
+
+DE = diffraction_efficiency(bragg_deviation)
 
 
 
@@ -90,3 +92,4 @@ print('Period: {0:.3g}'.format(period))
 print('SF: {0:.3g}'.format(1000000/period))
 print(r'$\Delta \theta_{air}$', np.rad2deg((period*0.001)/thickness))
 #print(bragg_deviation)
+print('Off bragg', E)

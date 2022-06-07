@@ -29,22 +29,22 @@ fwhms = []
 
 import pylab as plt
 
-
-for curve in curves:
+sc = plt.plot(curves[4].energy, curves[4].diff_efficiencies, label= curves[4].power)
+"""for curve in curves:
     #sc = plt.scatter(curve.angles, curve.diff_efficiencies, s= 15, alpha = 0.75, label= curve.power)
-    #sc = plt.plot(curve.times, curve.diff_efficiencies, label= curve.power)
-    sc = plt.plot(curve.energy, curve.diff_efficiencies, label= curve.power)
+    sc = plt.plot(curve.times, curve.diff_efficiencies, label= curve.power)
+    #sc = plt.plot(curve.energy, curve.diff_efficiencies, label= curve.power)
     #col = sc.get_facecolors()[1].tolist()
     #plt.hlines(np.max(curve.diff_efficiencies)/2, curve.r1, curve.r2, alpha = 0.75)
 
     # append line width to list
     #fwhms.append(np.abs(curve.r1 - curve.r2))
 
-    #plt.axvspan(curve.r1, curve.r2, facecolor='g', alpha=0.5)
+    #plt.axvspan(curve.r1, curve.r2, facecolor='g', alpha=0.5)"""
 
-plt.title(r'$Diffraction Efficiency$ vs Exposure Energy, Thickness $= 50 \mu m$')
+plt.title(r'$Diffraction Efficiency$ vs Exposure Time, Thickness $= 50 \mu m$')
 plt.ylabel(r'$Diffraction Efficiency$ (%)')
-plt.xlabel(r'Exposure energy (J)')
+plt.xlabel(r'Exposure Energy (J))')
 plt.xlim(0, 10)
 plt.ylim(0, 90)
 plt.legend()
