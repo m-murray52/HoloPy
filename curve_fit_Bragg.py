@@ -63,7 +63,7 @@ def main():
     n_film =grating1.n_film
     wavelength_air = grating1.wavelength_air
     bragg_angle = grating1.bragg_angle
-    thickness = grating1.film_thickness
+    #thickness = grating1.film_thickness
 
     def diffraction_efficiency(bragg_deviation, RIM, thickness):
         bragg_deviation = np.arcsin((np.sin(np.deg2rad(bragg_deviation)))/n_film)
@@ -72,7 +72,7 @@ def main():
         return (np.sin(np.sqrt((v)**2 + E**2)))**2/(1+(E**2/(v)**2))
 
         
-
+    thickness = grating1.film_thickness
     def theoretical_diffraction_efficiency(bragg_deviation, v):
         bragg_deviation = np.arcsin((np.sin(np.deg2rad(bragg_deviation)))/n_film)
         E = (bragg_deviation*2*np.pi*n_film*thickness*np.sin(bragg_angle))/(wavelength_air)
@@ -82,7 +82,7 @@ def main():
     plt.scatter(angles, diff_efficiencies, s= 20, label='measured data')
 
     
-    popt, pcov = curve_fit(diffraction_efficiency, angles, diff_efficiencies, bounds=(0.000, [0.006, 55]))
+    popt, pcov = curve_fit(diffraction_efficiency, angles, diff_efficiencies, p0= [0.01, 10], bounds=(0.000, [0.05, 50]))
     popt
 
     perr = np.sqrt(np.diag(pcov))
